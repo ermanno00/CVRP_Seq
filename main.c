@@ -85,7 +85,7 @@ int main() {
 }
 
 // Function to create a new node with the given data
-RoutedNode * createNode_seq(Node node) {
+RoutedNode * createNode(Node node) {
     RoutedNode * newNode = (RoutedNode*)malloc(sizeof(RoutedNode));
     newNode->current_node = node;
     newNode->nextNode = NULL;
@@ -93,8 +93,8 @@ RoutedNode * createNode_seq(Node node) {
 }
 
 // Function to insert a new node at the end of the linked list
-void insertAtEnd_seq(RoutedNode ** head, Node data) {
-    RoutedNode* newNode = createNode_seq(data);
+void insertAtEnd(RoutedNode ** head, Node data) {
+    RoutedNode* newNode = createNode(data);
 
     if (*head == NULL) {
         *head = newNode;
@@ -108,7 +108,7 @@ void insertAtEnd_seq(RoutedNode ** head, Node data) {
 }
 
 // Function to get the last element of the linked list
-RoutedNode * getLastElement_seq(RoutedNode * head) {
+RoutedNode * getLastElement(RoutedNode * head) {
     if (head == NULL) {
         return NULL; // Empty list
     }
@@ -160,17 +160,17 @@ void init_problem(Problem* p, int noc, int demand_range, int nov, int capacity, 
     for (int i = 0; i < nov; ++i) {
         p->vehicles[i].load = (double)capacity;
         p->vehicles[i].cost = 0.0;
-        insertAtEnd_seq(&p->vehicles[i].routedNode, p->nodes[0]);
+        insertAtEnd(&p->vehicles[i].routedNode, p->nodes[0]);
     }
 
 }
 
 // Function to generate a random double in the range [min, max]
-double random_double_seq(double min, double max) {
+double random_double(double min, double max) {
     return min + ((double)rand() / RAND_MAX) * (max - min);
 }
 
-bool all_routed_seq(Problem p) {
+bool all_routed(Problem p) {
 
     for (int i = 0; i < p.number_of_customer; i++) {
         if (!p.nodes[i].is_routed) {
@@ -183,11 +183,11 @@ bool all_routed_seq(Problem p) {
 
 
 
-void greedy_solve_seq(Problem * p) {
+void greedy_solve(Problem * p) {
 
     for (int i = 0; i < p->number_of_vehicles; i++) {
-        while(!all_routed_seq(*p)) {
-            RoutedNode *last_routed_node = getLastElement_seq(p->vehicles->routedNode);
+        while(!all_routed(*p)) {
+            RoutedNode *last_routed_node = getLastElement(p->vehicles->routedNode);
             ClosestNodeResult result = find_closest(
                     p->vehicles[i],
                     last_routed_node->current_node,
@@ -199,12 +199,12 @@ void greedy_solve_seq(Problem * p) {
                 p->vehicles[i].cost += p->distanceMatrix[last_routed_node->current_node.id][result.closest_node.id];
 
                 // Update the linked list of routed nodes for the vehicle
-                insertAtEnd_seq(&p->vehicles[i].routedNode, result.closest_node);
+                insertAtEnd(&p->vehicles[i].routedNode, result.closest_node);
                 p->nodes[result.closest_node.id].is_routed = true;
             } else {
                 //adding depot
                 p->vehicles[i].cost += p->distanceMatrix[last_routed_node->current_node.id][0];
-                insertAtEnd_seq(&p->vehicles[i].routedNode, p->nodes[0]);
+                insertAtEnd(&p->vehicles[i].routedNode, p->nodes[0]);
                 break;
             }
         }
@@ -215,11 +215,11 @@ void greedy_solve_seq(Problem * p) {
         cost += p->vehicles[i].cost;
     }
     printf("Cost: %lf\n", cost);
-    printf("Solution valid: %d\n", all_routed_seq(*p));
+    printf("Solution valid: %d\n", all_routed(*p));
 }
 
 
-ClosestNodeResult find_closest_seq(Vehicle v, Node last_node, Problem p) {
+ClosestNodeResult find_closest(Vehicle v, Node last_node, Problem p) {
     double cost = DBL_MAX;
     size_t id = 0;
 
