@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <float.h>
+#include <time.h>
+#include <sys/time.h>
 
 typedef struct {
     int id;
@@ -52,34 +54,32 @@ void printList(RoutedNode * head) {
     printf("NULL\n");
 }
 
+
 int main() {
 
-    const int noc = 20;
+    const int noc = 10000;
     const int demand_range = 10;
     const int nov = 3;
-    const int capacity = 50;
+    const int capacity = 40000;
     const int grid_range = 10;
     Problem p;
 
     init_problem(&p, noc, demand_range, nov, capacity, grid_range);
 
-    printf("Greedy: \n");
+
+
+    clock_t start, end;
+    double cpu_time_used;
+
+    start = clock();
     greedy_solve(&p);
-    printf("\n");
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("tempo totale in secondi: %f\n",cpu_time_used);
 
-    for (int i = 0; i < noc; i++) {
-        for (int j = 0; j < noc; j++) {
-            printf("%f ",p.distanceMatrix[i][j]);
-        }
-        printf("\n");
+    for (int i = 0; i < p.number_of_vehicles; i++) {
+        printf("veicolo %d carico residuo %f\n",i,p.vehicles->load);
     }
-    printf("\n\n");
-
-    for(int i =0; i<nov; i++){
-        printf("veicolo %d con rotta: ",i);
-        printList(p.vehicles[i].routedNode);
-    }
-
 
     return 0;
 }
